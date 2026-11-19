@@ -125,14 +125,21 @@ the exit edge n3-n9, so it is not a combination of B1 to B4.
 
 ## Section 4: Results
 
-Local run (`mvn -B -Dmaven.test.failure.ignore=true test`). Replace with the CI numbers once the PR runs.
+From the CI run on [PR #2](https://github.com/aacruzgon/WesternCS4472-ATM-Assignment2/pull/2) ([run 44615555522](https://github.com/aacruzgon/WesternCS4472-ATM-Assignment2/actions/runs/44615555522), commit `eaf7b00`). The Actual and Status columns in Sections 2.2 and 3.2 match this run.
 
-| Test class | Run | Passed | Failed |
-|---|---:|---:|---:|
-| `CashValidatorTest` | 4 | 3 | 1 |
-| `FormatCheckerTest` | 5 | 3 | 2 |
+| Test class | Run | Passed | Failed | Failing tests |
+|---|---:|---:|---:|---|
+| `CashValidatorTest` | 4 | 3 | 1 | BON-03 |
+| `FormatCheckerTest` | 5 | 3 | 2 | BON-05, BON-06 |
 
-Coverage (JaCoCo): `validateWithdrawal` 4/4 branches, `checkPinFormat` 8/8 branches.
+Coverage, from the JaCoCo report uploaded by the same run:
+
+| Method | Instructions | Branches | Lines | Complexity |
+|---|---:|---:|---:|---:|
+| `CashValidator.validateWithdrawal` | 18/18 | 4/4 | 7/7 | 3 |
+| `FormatChecker.checkPinFormat` | 31/31 | 8/8 | 6/6 | 5 |
+
+JaCoCo's complexity matches V(G) for both methods (3 and 5).
 
 ## Section 5: Fault localization
 
