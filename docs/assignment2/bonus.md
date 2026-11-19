@@ -130,11 +130,11 @@ the exit edge n3-n9, so it is not a combination of B1 to B4.
 
 ## Section 4: Results
 
-From the CI run on [PR #2](https://github.com/aacruzgon/WesternCS4472-ATM-Assignment2/pull/2) ([run 44615555522](https://github.com/aacruzgon/WesternCS4472-ATM-Assignment2/actions/runs/44615555522), commit `eaf7b00`). The Actual and Status columns in Sections 2.2 and 3.2 match this run.
+From the CI run on [PR #2](https://github.com/aacruzgon/WesternCS4472-ATM-Assignment2/pull/2) ([run 44617106522](https://github.com/aacruzgon/WesternCS4472-ATM-Assignment2/actions/runs/44617106522), commit `3f5a13b`). The Actual and Status columns in Sections 2.2 and 3.2 match this run.
 
 | Test class | Run | Passed | Failed | Failing tests |
 |---|---:|---:|---:|---|
-| `CashValidatorTest` | 4 | 3 | 1 | BON-03 |
+| `CashValidatorTest` | 6 | 3 | 3 | BON-03, BON-10, BON-11 |
 | `FormatCheckerTest` | 5 | 3 | 2 | BON-05, BON-06 |
 
 Coverage, from the JaCoCo report uploaded by the same run:
