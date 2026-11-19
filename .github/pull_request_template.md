@@ -11,8 +11,9 @@
 <!-- What does this PR change and why? 3-5 sentences. -->
 
 ### For `phase:tests` PRs
-<!-- For each new test class: which technique produced the test cases, and which
-     specification section each test traces to. -->
+<!-- For each new test class: which technique produced the test cases (slice,
+     DU-paths, basis paths), which slice element / DU-path / basis path each test
+     covers, and which A2 specification figure gives its expected value. -->
 <!-- Fault localization: for every failing test, which fault (file, method,
      statement/condition) do you believe it exposes, and why? One line each. -->
 
@@ -32,5 +33,8 @@
 - [ ] Exactly one of the `phase:tests` / `phase:fix` labels is applied
 - [ ] `mvn -B checkstyle:check` passes locally
 - [ ] New tests are JUnit 5 and live under `src/test/java`
-- [ ] (phase:tests) Every test cites the specification section it traces to
+- [ ] (phase:tests) Every expected value comes from the A2 specification figures, not from the code
+- [ ] (phase:tests) Every test names the slice element, DU-path or basis path it covers
+- [ ] (phase:tests) Every test calls the method under test
+- [ ] (phase:tests) Every failure is in the failure log (`docs/assignment2/failure-log.md`)
 - [ ] (phase:fix) The full suite passes locally (`mvn -B test`)
