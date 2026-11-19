@@ -270,7 +270,18 @@ Coverage criterion: one test per basis path, so every path P1 to P16 is executed
 
 ## Test results
 
-Local run (`mvn -B -Dmaven.test.failure.ignore=true test`): 16 run, 0 passed, 16 failed. Checkstyle: 0 violations. Replace with the CI numbers from this PR once it runs.
+CI run on [PR #6](https://github.com/aacruzgon/WesternCS4472-ATM-Assignment2/pull/6) ([run 44621223600](https://github.com/aacruzgon/WesternCS4472-ATM-Assignment2/actions/runs/44621223600)): `FeesCalculatorTransferTest` 16 run, 0 passed, 16 failed. Checkstyle passed.
+
+Coverage (JaCoCo report from the same run), `calculateTransferFee`:
+
+| Measure | Covered | Coverage |
+|---|---|---|
+| Instructions | all | 100% |
+| Branches | 30 of 30 (2 per decision, 15 decisions) | 100% |
+| Lines | 33 of 33 | 100% |
+| Cyclomatic complexity | 16 of 16 | 100% |
+
+JaCoCo's complexity of 16 for this method matches V(G) = 16 from the control-flow graph, and every one of the 16 is covered, which confirms that the 16 tests run all 16 basis paths.
 
 | ID | Path | Expected fee (spec) | Actual fee | Result |
 |---|---|---|---|---|
