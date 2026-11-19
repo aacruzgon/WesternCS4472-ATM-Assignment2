@@ -141,3 +141,72 @@ flowchart TD
 4. **D-A4. "Interest" is the deposit fee.** The method is named `calculateDepositInterest` and the variable `interestPercentage`, but the specification describes a deposit fee. The returned value is treated as the fee: `amount x` the specification rate.
 5. **D-A5. Strict thresholds.** "More than $X" means strictly greater than X, and "$X or less" means less than or equal to X, matching the specification's wording. DU-path coverage does not call for boundary values, so every test input sits well away from the thresholds ($100, $500, $1,000, $5,000, $10,000) and lands on its DU-path without doubt.
 6. **D-A6. Amounts are positive and non-zero.** Every test deposits a positive amount, so a wrong rate always produces a visibly wrong result, including on the two "no fee" paths.
+
+## Section 2: Test cases
+
+Coverage criterion: for each of the eight DU-paths, one test executes every statement on that path (all DU-paths, with statement coverage of each). The eight definitions sit on mutually exclusive branches, so at least eight tests are needed, and eight are enough.
+
+| ID | DU-path | Amount | Balance | Student | Spec rule | Expected fee | Statements covered |
+|---|---|---|---|---|---|---|---|
+| DEP-01 | DU1 <42, 70> | $200.00 | $2,000.00 | yes | S1: 1% x 200 | 2.00 | 33, 37 (T), 39 (T), 41 (T), 42, 70, 72 |
+| DEP-02 | DU2 <44, 70> | $200.00 | $500.00 | yes | S2: 0.5% x 200 | 1.00 | 33, 37 (T), 39 (T), 41 (F), 44, 70, 72 |
+| DEP-03 | DU3 <48, 70> | $50.00 | $6,000.00 | yes | S3: 0.5% x 50 | 0.25 | 33, 37 (T), 39 (F), 47 (T), 48, 70, 72 |
+| DEP-04 | DU4 <50, 70> | $50.00 | $1,000.00 | yes | S4: no fee | 0.00 | 33, 37 (T), 39 (F), 47 (F), 50, 70, 72 |
+| DEP-05 | DU5 <56, 70> | $1,000.00 | $6,000.00 | no | N1: 1% x 1,000 | 10.00 | 33, 37 (F), 54 (T), 55 (T), 56, 70, 72 |
+| DEP-06 | DU6 <58, 70> | $1,000.00 | $2,000.00 | no | N2: 0.5% x 1,000 | 5.00 | 33, 37 (F), 54 (T), 55 (F), 58, 70, 72 |
+| DEP-07 | DU7 <62, 70> | $200.00 | $20,000.00 | no | N3: 0.5% x 200 | 1.00 | 33, 37 (F), 54 (F), 61 (T), 62, 70, 72 |
+| DEP-08 | DU8 <64, 70> | $200.00 | $5,000.00 | no | N4: no fee | 0.00 | 33, 37 (F), 54 (F), 61 (F), 64, 70, 72 |
+
+### Coverage check
+
+| Statement | DEP-01 | DEP-02 | DEP-03 | DEP-04 | DEP-05 | DEP-06 | DEP-07 | DEP-08 | Covered |
+|---|---|---|---|---|---|---|---|---|---|
+| 33 | x | x | x | x | x | x | x | x | yes |
+| 37 | x | x | x | x | x | x | x | x | yes |
+| 39 | x | x | x | x | | | | | yes |
+| 41 | x | x | | | | | | | yes |
+| 42 | x | | | | | | | | yes |
+| 44 | | x | | | | | | | yes |
+| 47 | | | x | x | | | | | yes |
+| 48 | | | x | | | | | | yes |
+| 50 | | | | x | | | | | yes |
+| 54 | | | | | x | x | x | x | yes |
+| 55 | | | | | x | x | | | yes |
+| 56 | | | | | x | | | | yes |
+| 58 | | | | | | x | | | yes |
+| 61 | | | | | | | x | x | yes |
+| 62 | | | | | | | x | | yes |
+| 64 | | | | | | | | x | yes |
+| 70 | x | x | x | x | x | x | x | x | yes |
+| 72 | x | x | x | x | x | x | x | x | yes |
+
+Every DU-path is executed in full by its test, and every statement of the method is covered. JaCoCo agrees. For `calculateDepositInterest`, running `FeesCalculatorDepositTest` alone gives 100% instruction coverage (55/55), 100% branch coverage (14/14) and 100% line coverage (17/17).
+
+## Test results
+
+| ID | DU-path | Expected fee | Actual fee | Result |
+|---|---|---|---|---|
+| DEP-01 | DU1 | 2.00 | 2.00 | Pass |
+| DEP-02 | DU2 | 1.00 | 1.00 | Pass |
+| DEP-03 | DU3 | 0.25 | 0.25 | Pass |
+| DEP-04 | DU4 | 0.00 | 0.10 | **Fail** |
+| DEP-05 | DU5 | 10.00 | 10.00 | Pass |
+| DEP-06 | DU6 | 5.00 | 5.00 | Pass |
+| DEP-07 | DU7 | 1.00 | 1.00 | Pass |
+| DEP-08 | DU8 | 0.00 | 0.00 | Pass |
+
+7 passed, 1 failed (local run with `mvn -B test`, Java 11).
+
+## Fault localization
+
+| Failing test | Suspected fault (file, method, line) | One-line justification |
+|---|---|---|
+| DEP-04 | `FeesCalculator.java`, `calculateDepositInterest`, line 50: `interestPercentage = 0.002;` (branch `student && amount <= 100 && accountBalance <= 5000`) | DEP-04 executes only DU4, whose single definition at line 50 assigns 0.2%. Spec rule S4 says no fee, and the observed fee of 0.10 is exactly 0.002 x $50, so line 50 should assign 0.0. |
+
+The other seven DU-paths pass, so their definitions (42, 44, 48, 56, 58, 62, 64) and the shared use at line 70 compute the specified fee. That clears line 70 and isolates the fault to the definition on line 50.
+
+## Failure log (keep for Assignment 3)
+
+| Failure ID | Exposed by | Time testing before found | Time diagnosing |
+|---|---|---|---|
+| F-DEP-1 | DEP-04 | ~1 min (first run of the suite) | ~3 min |
