@@ -146,26 +146,18 @@ All 12 slice statements are covered (100% statement coverage of `S(C)`).
 
 | ID | Expected fee | Actual fee | Result |
 |---|---|---|---|
-| WD-01 | 0.00 | | pending CI |
-| WD-02 | 0.40 | | pending CI |
-| WD-03 | 0.60 | | pending CI |
-| WD-04 | 0.70 | | pending CI |
-| WD-05 | 0.00 | | pending CI |
+| WD-01 | 0.00 | 0.00 | Pass |
+| WD-02 | 0.40 | 0.40 | Pass |
+| WD-03 | 0.60 | 0.60 | Pass |
+| WD-04 | 0.70 | 0.70 | Pass |
+| WD-05 | 0.00 | 0.00 | Pass |
 
-**Expected from analysis (not a CI result).** Reading lines 10 to 23 against the specification table, every branch assigns the rate its rule specifies (13: S1 0%, 15: S2 0.1%, 19: N1 0.2%, 21: N2 0.1%, 23: N3 0%), and line 28 multiplies by the amount. No divergence from the specification is visible inside the slice, so all five tests are expected to pass. Only the CI run can confirm this.
+All five tests passed in the CI run on [PR #1](https://github.com/aacruzgon/WesternCS4472-ATM-Assignment2/pull/1): every branch of the slice assigns the rate its specification rule gives (13: S1 0%, 15: S2 0.1%, 19: N1 0.2%, 21: N2 0.1%, 23: N3 0%), and line 28 multiplies it by the amount.
 
 ## Fault localization
 
-To be filled in once CI has run.
-
-| Fault ID | Failing tests | Class, method, line | Justification |
-|---|---|---|---|
-| | | | |
+No test failed, so the slice exposes no fault in `calculateWithdrawalFee`.
 
 ## Failure log (keep for Assignment 3)
 
-The time columns are filled in by the team member who ran and diagnosed the tests.
-
-| Failure ID | Test case | Time testing before found | Time diagnosing |
-|---|---|---|---|
-| | | | |
+No withdrawal failures were found, so there are no entries.
