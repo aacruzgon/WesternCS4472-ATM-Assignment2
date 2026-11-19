@@ -209,4 +209,6 @@ The other seven DU-paths pass, so their definitions (42, 44, 48, 56, 58, 62, 64)
 
 | Failure ID | Exposed by | Time testing before found | Time diagnosing |
 |---|---|---|---|
-| F-DEP-1 | DEP-04 | ~1 min (first run of the suite) | ~3 min |
+| DEP-F1 | DEP-04 | ~1 min (first run of the suite) | ~3 min |
+
+This row is also in the combined log, `docs/assignment2/failure-log.md`.
