@@ -195,7 +195,7 @@ Every DU-path is executed in full by its test, and every statement of the method
 | DEP-07 | DU7 | 1.00 | 1.00 | Pass |
 | DEP-08 | DU8 | 0.00 | 0.00 | Pass |
 
-7 passed, 1 failed (local run with `mvn -B test`, Java 11).
+7 passed, 1 failed, in the CI run on [PR #5](https://github.com/aacruzgon/WesternCS4472-ATM-Assignment2/pull/5) ([JUnit results](https://github.com/aacruzgon/WesternCS4472-ATM-Assignment2/runs/135899276653)), matching the local `mvn -B test` run. The JaCoCo comment on the PR reports only whole-project coverage (6.95% overall). The per-method figures for `calculateDepositInterest` above come from the JaCoCo report (`target/site/jacoco`) for the same tests.
 
 ## Fault localization
 
