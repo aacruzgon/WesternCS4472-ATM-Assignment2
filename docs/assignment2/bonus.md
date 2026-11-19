@@ -11,6 +11,11 @@ V(G) linearly independent paths with the baseline method: take one normal path, 
 flip one decision at a time. Each path gets at least one test. The paths come from the
 code, but every expected value comes from the specification, never from the code.
 
+**Oracle.** The A2 handout gives fee figures only for `FeesCalculator`, and it allows bonus
+tests on faults outside that target. It gives no rules for withdrawal amounts or PINs, so the
+expected values here come from the ATM system specification used in Assignment 1, which the
+A2 handout does not change.
+
 **Assumptions.**
 
 1. **B-A1. Withdrawal amounts.** The ATM dispenses $20 and $50 bills, so an amount is valid only if some mix of the two makes it (same as S-A2 in A1).
