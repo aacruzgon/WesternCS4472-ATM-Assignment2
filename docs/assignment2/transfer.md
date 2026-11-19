@@ -2,7 +2,7 @@
 
 Target: `bank.utils.FeesCalculator.calculateTransferFee(double amount, double fromAccountBalance, double toAccountBalance, boolean student)`
 Technique: basis path testing (McCabe): control-flow graph, cyclomatic complexity V(G), one test per basis path
-JUnit class: `src/test/java/bank/utils/FeesCalculatorTransferTest.java` (next PR, after the analysis below is checked)
+JUnit class: `src/test/java/bank/utils/FeesCalculatorTransferTest.java`
 
 ## Section 1: Process and assumptions
 
@@ -205,7 +205,7 @@ flowchart TD
 |---|---|---|
 | Edges and nodes | E - N + 2 = 48 - 34 + 2 | **16** |
 | Decisions | P + 1 = 15 + 1 | **16** |
-| Regions | 15 closed regions (one per decision, where its two branches meet again) + 1 outer region | **16** |
+| Regions | 15 bounded regions, one between each pair of neighbouring paths into node 142, plus the outer region | **16** |
 
 All three agree, so the basis set has **16 paths**.
 
@@ -270,14 +270,72 @@ Coverage criterion: one test per basis path, so every path P1 to P16 is executed
 
 ## Test results
 
-To be filled in from the CI run once the tests are merged.
+CI run on [PR #6](https://github.com/aacruzgon/WesternCS4472-ATM-Assignment2/pull/6) ([run 44621223600](https://github.com/aacruzgon/WesternCS4472-ATM-Assignment2/actions/runs/44621223600)): `FeesCalculatorTransferTest` 16 run, 0 passed, 16 failed. Checkstyle passed.
+
+Coverage (JaCoCo report from the same run), `calculateTransferFee`:
+
+| Measure | Covered | Coverage |
+|---|---|---|
+| Instructions | all | 100% |
+| Branches | 30 of 30 (2 per decision, 15 decisions) | 100% |
+| Lines | 33 of 33 | 100% |
+| Cyclomatic complexity | 16 of 16 | 100% |
+
+JaCoCo's complexity of 16 for this method matches V(G) = 16 from the control-flow graph, and every one of the 16 is covered, which confirms that the 16 tests run all 16 basis paths.
+
+| ID | Path | Expected fee (spec) | Actual fee | Result |
+|---|---|---|---|---|
+| TF-01 | P1 | 0.05 | 0.50 | **Fail** |
+| TF-02 | P2 | 0.025 | 0.25 | **Fail** |
+| TF-03 | P3 | 0.25 | 2.50 | **Fail** |
+| TF-04 | P4 | 0.125 | 1.25 | **Fail** |
+| TF-05 | P5 | 0.25 | 2.50 | **Fail** |
+| TF-06 | P6 | 0.125 | 1.25 | **Fail** |
+| TF-07 | P7 | 1.25 | 12.50 | **Fail** |
+| TF-08 | P8 | 0.625 | 6.25 | **Fail** |
+| TF-09 | P9 | 0.10 | 1.00 | **Fail** |
+| TF-10 | P10 | 0.05 | 0.50 | **Fail** |
+| TF-11 | P11 | 0.50 | 5.00 | **Fail** |
+| TF-12 | P12 | 0.25 | 2.50 | **Fail** |
+| TF-13 | P13 | 0.50 | 5.00 | **Fail** |
+| TF-14 | P14 | 0.25 | 2.50 | **Fail** |
+| TF-15 | P15 | 2.50 | 25.00 | **Fail** |
+| TF-16 | P16 | 1.25 | 27.50 | **Fail** |
+
+Every basis path returns the wrong fee. On P1 to P15 the actual fee is exactly 10 times the expected fee; on P16 it is 22 times.
 
 ## Fault localization
 
-To be filled in after the CI run.
+Each basis path ends at its own assignment to `feePercentage`, and the only other statement on the path is `fee = amount * feePercentage` (line 142), which every path shares. A path that fails while the shared statements are the same for all paths points at the one statement only that path runs: its `feePercentage` assignment.
+
+| Fault | Failing tests | Location | Explanation |
+|---|---|---|---|
+| TF-F1 | TF-01 to TF-15 | `FeesCalculator.calculateTransferFee`, the `feePercentage` assignments on lines 83, 85, 89, 91, 97, 99, 103, 105, 113, 115, 119, 121, 127, 129, 133 | Each line sets a rate 10 times the A2 figure (for example line 83 sets `0.01` where S1 says 0.1% = `0.001`), so every one of these paths returns exactly 10 times the specified fee: the decimal point is one place off in every rate. |
+| TF-F2 | TF-16 | `FeesCalculator.calculateTransferFee`, line 135: `feePercentage = 0.055;` | N8 says 0.25% = `0.0025`, but line 135 sets `0.055`, 22 times too high, so P16 returns $27.50 instead of $1.25. It is not the same 10x slip as TF-F1 (that would give `0.025`), so moving the decimal point alone would not fix it. |
+
+Line 142 is not at fault: it runs on all 16 paths, and on each one the fee equals the amount times the rate set on that path, so the multiplication is right and only the rates are wrong.
+
+Rates per path, for reference:
+
+| Path | Line | Spec rate | Rate in code |
+|---|---|---|---|
+| P1 | 83 | 0.001 | 0.01 |
+| P2 | 85 | 0.0005 | 0.005 |
+| P3 | 89 | 0.005 | 0.05 |
+| P4 | 91 | 0.0025 | 0.025 |
+| P5 | 97 | 0.0005 | 0.005 |
+| P6 | 99 | 0.00025 | 0.0025 |
+| P7 | 103 | 0.0025 | 0.025 |
+| P8 | 105 | 0.00125 | 0.0125 |
+| P9 | 113 | 0.002 | 0.02 |
+| P10 | 115 | 0.001 | 0.01 |
+| P11 | 119 | 0.01 | 0.1 |
+| P12 | 121 | 0.005 | 0.05 |
+| P13 | 127 | 0.001 | 0.01 |
+| P14 | 129 | 0.0005 | 0.005 |
+| P15 | 133 | 0.005 | 0.05 |
+| P16 | 135 | 0.0025 | 0.055 |
 
 ## Failure log (keep for Assignment 3)
 
-| Failure ID | Test case | Time testing before it was found | Time diagnosing |
-|---|---|---|---|
-| | | | |
+TF-F1 and TF-F2 are logged in the team's combined log, `docs/assignment2/failure-log.md`.
