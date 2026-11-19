@@ -32,9 +32,10 @@ import org.junit.jupiter.api.Test;
  *
  * The paths come from the code, but the expected values come from the
  * specification: the ATM dispenses $20 and $50 bills, so an amount is valid
- * only if it can be made from some mix of the two. P3 gets two tests, one
- * amount the bills can make and one they cannot, because the code returns
- * false for every input on that path.
+ * only if it is more than $0 and can be made from some mix of the two. P3
+ * gets two tests, one amount the bills can make and one they cannot, because
+ * the code returns false for every input on that path. P1 also gets $0 and
+ * -$100: both are multiples of $50, but neither can be withdrawn.
  */
 class CashValidatorTest {
 
@@ -60,5 +61,17 @@ class CashValidatorTest {
 	@DisplayName("BON-04 P3: $30 cannot be made from $20 and $50 bills")
 	void bon04UndispensableAmountIsRejected() {
 		assertEquals(false, CashValidator.validateWithdrawal(30));
+	}
+
+	@Test
+	@DisplayName("BON-10 P1: $0 is rejected")
+	void bon10ZeroAmountIsRejected() {
+		assertEquals(false, CashValidator.validateWithdrawal(0));
+	}
+
+	@Test
+	@DisplayName("BON-11 P1: -$100 is rejected")
+	void bon11NegativeAmountIsRejected() {
+		assertEquals(false, CashValidator.validateWithdrawal(-100));
 	}
 }

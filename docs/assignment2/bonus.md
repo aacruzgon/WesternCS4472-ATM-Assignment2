@@ -22,6 +22,7 @@ A2 handout does not change.
 2. **B-A2. PIN format.** A valid PIN is exactly 5 characters, each a digit 0-9 (same as S-A4 in A1).
 3. **B-A3. Compound conditions.** Java's `||` short-circuits, so `(pin[i] < '0') || (pin[i] >= '9')` on line 35 of `FormatChecker` becomes two decision nodes. This matches JaCoCo, which also counts a complexity of 5 for `checkPinFormat`.
 4. **B-A4. Unit level.** The methods are called directly, not through `ATM` or `Session`. They have no collaborators, so no mocks are needed.
+5. **B-A5. Non-positive amounts.** A withdrawal of $0 or less cannot be dispensed, so it is not a valid amount and must be rejected (same as S-A3 in A1).
 
 ## Section 2: `CashValidator.validateWithdrawal`
 
@@ -58,7 +59,9 @@ V(G) = 7 edges - 6 nodes + 2 = **3** (2 decisions + 1).
 | P3 | n1, n2, n3, n4, n5, n6 | `amount % 50 != 0` and `(amount % 50) % 20 != 0` |
 
 P3 has two tests. The code returns false for every input on it, so one test uses an
-amount the bills can make and one uses an amount they cannot.
+amount the bills can make and one uses an amount they cannot. P1 has three tests: the
+code returns true for every input on it, so besides a valid amount it gets $0 and -$100,
+which are multiples of $50 but cannot be withdrawn (B-A5).
 
 | ID | Path | `amount` | Expected (spec) | Actual | Status |
 |---|---|---|---|---|---|
@@ -66,6 +69,8 @@ amount the bills can make and one uses an amount they cannot.
 | BON-02 | P2 | 40 (2 x $20) | true | true | Pass |
 | BON-03 | P3 | 60 (3 x $20) | true | false | **Fail** |
 | BON-04 | P3 | 30 (no mix) | false | false | Pass |
+| BON-10 | P1 | 0 | false | true | **Fail** |
+| BON-11 | P1 | -100 | false | true | **Fail** |
 
 ## Section 3: `FormatChecker.checkPinFormat`
 
@@ -147,6 +152,7 @@ JaCoCo's complexity matches V(G) for both methods (3 and 5).
 |---|---|---|---|
 | BON-F1 | BON-05, BON-06 | `FormatChecker.checkPinFormat`, line 33: `if (pin.length == 4)` | The spec requires 5 digits. The length check uses 4, so a 4-digit PIN goes through the loop and is accepted (BON-05), and a 5-digit PIN goes straight to the `else` throw (BON-06). |
 | BON-F2 | BON-03 | `CashValidator.validateWithdrawal`, lines 24-27: `amount % 50` then `% 20` | The method only accepts amounts that are some number of $50s plus a multiple of $20 less than $50 (`amount % 50` is 0, 20 or 40). It never tries fewer $50 bills, so mixes like $60 = 3 x $20 or $110 = $50 + 3 x $20 are rejected. |
+| BON-F3 | BON-10, BON-11 | `CashValidator.validateWithdrawal`, lines 21-31: no check that `amount > 0` | `result` starts as true and is only set to false on P3, so any multiple of $50 takes P1 and is accepted, including $0 (`0 % 50 == 0`) and -$100 (`-100 % 50 == 0`). |
 
 **Masked fault.** Line 35 of `FormatChecker` uses `pin[i] >= '9'`, which also rejects the
 valid digit 9 (it should be `> '9'`). BON-08 runs this condition with `'9'` but passes,
